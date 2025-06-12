@@ -131,9 +131,10 @@ class Utenti extends DataBaseCore{
         }
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $immagine = NULL;
 
-        $stmt = $this->conn->prepare("INSERT INTO utenti (nome, cognome, username, email, password, descrizione, telefono_contatto, immagine_profilo) VALUES (?, ?, ?, ?, ?, ?, '')");
-        $stmt->bind_param("ssssssss",$nome, $cognome, $username, $email, $passwordHash, $descrizione, $nTelefono);
+        $stmt = $this->conn->prepare("INSERT INTO utenti (nome, cognome, username, email, password, descrizione, telefono_contatto, immagine_profilo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssss",$nome, $cognome, $username, $email, $passwordHash, $descrizione, $nTelefono, $immagine);
 
     
         if ($stmt->execute()) {

@@ -3,7 +3,7 @@
 
 class FileSystem{
 
-    private $fileSystemUrl = "https://127.0.0.1/backEnd/";
+    private $fileSystemUrl = "https://127.0.0.1/bitByte/backEnd/fileSystem/";
     private $uploadsPath = "files/";
     private $utenteFolderPlaceholder = "u_";
     private $aziendaFolderPlaceholder = "a_";

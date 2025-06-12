@@ -1,6 +1,6 @@
 <?php
 //in questi file ci sono le funzioni per comunicare al database
-require(__DIR__."../../db/models/utenti.php");
+require(__DIR__."/../../db/models/utenti.php");
 
 //Verifica che siano stati inviati l'email e la password
 if(
@@ -39,9 +39,9 @@ if(
 
             unset($_SESSION["data_registrazione"]);
 
-            header('Location: /frontEnd/utente/paginaProfilo.php?id='.$_SESSION["utente_id"]);
-
             http_response_code(200); //OK
+
+            header('Location: ../../../frontEnd/utente/paginaProfilo.php?id='.$_SESSION["utente_id"]);
         }
     } else {
         //Se mancano email o password

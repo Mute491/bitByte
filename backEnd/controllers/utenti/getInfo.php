@@ -1,7 +1,7 @@
 <?php
 
-    require("../../db/models/utenti.php");
-    require("../../fileSystem/storage/storageUtenti.php");
+    require(__DIR__."/../../db/models/utenti.php");
+    require(__DIR__."/../../fileSystem/storage/storageUtenti.php");
 
     if(isset($_GET["id"]) && $_GET["id"]!=""){
 
@@ -32,11 +32,22 @@
             unset($userData["password"]);
             unset($userData["data_registrazione"]);
 
-            $path = $storageUtenti -> getFileSystemUrl();
-            $path .= $storageUtenti -> getUploadsPath();
-            $path .= $storageUtenti -> getUtenteFolderPlaceholder();
 
-            $userData["immagine_profilo"] = $path . $userData["immagine_profilo"];
+            if($userData["immagine_profilo"] != NULL){
+
+                $path = $storageUtenti -> getFileSystemUrl();
+                $path .= $storageUtenti -> getUploadsPath();
+                $path .= $storageUtenti -> getUtenteFolderPlaceholder();
+                $path .= $userId."/";
+                $userData["immagine_profilo"] = $path . $userData["immagine_profilo"];
+
+            }
+            else{
+
+                unset($userData["immagine_profilo"]);
+
+            }
+            
 
             echo(json_encode($userData));
 
@@ -47,7 +58,7 @@
 
             echo("non autenticato");
             http_response_code(403);
-
+            header('Location: ../../frontEnd/utente/login.html');
         }
 
     }
@@ -55,6 +66,7 @@
 
         echo("campi obbligatori mancanti");
         http_response_code(403);
+        header('Location: ../../frontEnd/utente/login.html');
 
     }
 

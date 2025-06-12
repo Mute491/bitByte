@@ -88,6 +88,7 @@
                     
             $utente -> closeConnectionToDatabase();
             echo("registrazione eseguita con successo");
+            header('Location: ../../..frontEnd/utente/login.html');
             http_response_code(200);
 
         }
