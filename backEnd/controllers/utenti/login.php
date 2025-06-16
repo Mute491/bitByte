@@ -2,13 +2,15 @@
 //in questi file ci sono le funzioni per comunicare al database
 require(__DIR__."/../../db/models/utenti.php");
 
-//Verifica che siano stati inviati l'email e la password
-if(
-    isset($_POST["email"]) && isset($_POST["password"]) &&
-    $_POST["email"] != "" && $_POST["email"] != ""
-) {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+function login(){
+
+    //Verifica che siano stati inviati l'email e la password
+    if(
+        isset($_POST["email"]) && isset($_POST["password"]) &&
+        $_POST["email"] != "" && $_POST["email"] != ""
+    ) {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
 
         $utenti = new Utenti();
 
@@ -48,4 +50,9 @@ if(
         echo "Campi obbligatori mancanti.";
         http_response_code(403);
     }
+
+}
+
+login();
+
 ?>

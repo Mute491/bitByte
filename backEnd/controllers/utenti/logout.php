@@ -1,11 +1,18 @@
 <?php
-session_start();
-session_unset();
-session_destroy();
 
-echo "logout effettuato";
-http_response_code(200);
+function logout(){
 
-header('Location: ../../../frontEnd/utente/login.html');
+    session_start();
+    session_unset();
+    session_destroy();
+
+    echo "logout effettuato";
+    http_response_code(200);
+
+    header('Location: ../../../frontEnd/utente/login.html');
+
+}
+
+logout();
 
 ?>

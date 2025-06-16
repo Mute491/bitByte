@@ -2,7 +2,7 @@
 
 require_once("core/dbCore.php");
 require("candidature.php");
-require("competenze.php");
+require("competenzeUtente.php");
 require("documentiUtente.php");
 
 class Utenti extends DataBaseCore{
@@ -255,7 +255,7 @@ class Utenti extends DataBaseCore{
             return 2;
         }
 
-        $query = "select * from competenzaUtente where utente_id = ".$this->utenteId;
+        $query = "SELECT c.competenza FROM competenzaUtente cu JOIN competenze c ON cu.competenza_id = c.competenza_id WHERE cu.utente_id = ".$this->utenteId;
 
         $result = $this->conn->query($query);
 
@@ -270,7 +270,7 @@ class Utenti extends DataBaseCore{
             // Itera su tutte le righe del risultato
             while ($row = $result->fetch_assoc()) {
                 // Crea un oggetto SediAziende e popola con i dati
-                $competenza = new Competenze();
+                $competenza = new CompetenzeUtente();
                 $competenza->populateFromArray($row);  // Popola l'oggetto Sede
                 // Aggiungi l'oggetto Sede all'array di sedi
                 array_push($this->competenze, $competenza);

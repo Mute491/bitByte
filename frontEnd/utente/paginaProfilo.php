@@ -2,6 +2,8 @@
 
     require("../../backEnd/controllers/utenti/getInfo.php");
 
+    $userData = getInfo();
+
 ?>
 
 <!DOCTYPE html>
@@ -92,9 +94,45 @@
                             <p id="descrizione" class="white-text">
                             <?php echo($userData["descrizione"])?>
                             </p>
-                            <p class="white-text">
-                                Competenze
-                            </p>
+                            <?php
+
+                                echo("<p>
+                                    Competenze
+                                    <br>");
+
+                                foreach($userData["competenze"] as $competenza){
+
+                                    echo($competenza -> getCompetenza() . "<br>");
+
+                                }
+                            
+                                echo("</p>");
+
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12 m8 offset-m2 l6 offset-l3">
+                <div class="card-panel grey darken-4 z-depth-1">
+                    <div class="row valign-wrapper">
+                        <div class="col s12">
+                            <?php
+
+                                echo("<p>
+                                    Documenti
+                                    <br>");
+
+                                foreach($userData["documenti"] as $documento){
+
+                                    echo("<a href='>".$documento["path"]."'>".$documento["nome"]."</a><br>");
+
+                                }
+                            
+                                echo("</p>");
+
+                            ?>
                         </div>
                     </div>
                 </div>

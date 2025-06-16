@@ -3,6 +3,7 @@
     require("../../db/models/utenti.php");
     require("../../fileSystem/storage/storageUtenti.php");
 
+function register(){
 
     if((isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["username"]) && isset($_POST["nome"]) && 
         isset($_POST["cognome"]) && isset($_POST["descrizione"]) && isset($_POST["nTelefono"])) &&
@@ -102,5 +103,8 @@
         http_response_code(400);
 
     }
+}
+
+register();
 
 ?>

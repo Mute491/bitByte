@@ -3,6 +3,8 @@
     require("../../db/models/utenti.php");
     require("../../fileSystem/storage/storageUtenti.php");
 
+function uploadFile(){
+
     session_Start();
 
     if(isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] != ""){
@@ -65,5 +67,6 @@
         http_response_code(403);
 
     }
+}
 
 ?>
