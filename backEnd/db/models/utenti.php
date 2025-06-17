@@ -1,9 +1,9 @@
 <?php
 
 require_once("core/dbCore.php");
-require("candidature.php");
-require("competenzeUtente.php");
-require("documentiUtente.php");
+require_once("candidature.php");
+require_once("competenze.php");
+require_once("documentiUtente.php");
 
 class Utenti extends DataBaseCore{
 
@@ -23,6 +23,10 @@ class Utenti extends DataBaseCore{
     private $documenti;
 
 
+    public function __construct() {
+        $this->connectToDatabase();
+    }
+    
     // Getter per utenteId
     public function getUtenteId() {
         return $this->utenteId;
@@ -36,11 +40,6 @@ class Utenti extends DataBaseCore{
     // Getter per password
     public function getPassword() {
         return $this->password;
-    }
-
-    // Setter per password
-    public function setPassword($passwd) {
-        $this->password = $passwd;
     }
 
     // Getter per username
@@ -124,25 +123,23 @@ class Utenti extends DataBaseCore{
     }
 
 
-    function addUtente($username, $nome, $cognome, $descrizione, $nTelefono, $email, $password) {
-
-        if (!$this->isConnectedToDb) {
-            return 2;
-        }
-
+    function addUtente($email, $password, $username, $nome, $cognome, $descrizione, $nTelefono)
+    {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $immagine = NULL;
-
-        $stmt = $this->conn->prepare("INSERT INTO utenti (nome, cognome, username, email, password, descrizione, telefono_contatto, immagine_profilo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssss",$nome, $cognome, $username, $email, $passwordHash, $descrizione, $nTelefono, $immagine);
-
+    
+        $stmt = $this->conn->prepare("INSERT INTO utenti (
+            email, password, username, nome, cognome, descrizione, telefono_contatto, immagine_profilo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, '')");
+    
+        $stmt->bind_param("sssssss", $email, $passwordHash, $username, $nome, $cognome, $descrizione, $nTelefono);
     
         if ($stmt->execute()) {
-            return 0;
+            return 0; // OK
         } else {
-            return 1;
+            return -1; // errore
         }
     }
+    
 
     function addDocumento($fileName){
 
@@ -255,7 +252,7 @@ class Utenti extends DataBaseCore{
             return 2;
         }
 
-        $query = "SELECT c.competenza FROM competenzaUtente cu JOIN competenze c ON cu.competenza_id = c.competenza_id WHERE cu.utente_id = ".$this->utenteId;
+        $query = "select * from competenzaUtente where utente_id = ".$this->utenteId;
 
         $result = $this->conn->query($query);
 
@@ -270,7 +267,7 @@ class Utenti extends DataBaseCore{
             // Itera su tutte le righe del risultato
             while ($row = $result->fetch_assoc()) {
                 // Crea un oggetto SediAziende e popola con i dati
-                $competenza = new CompetenzeUtente();
+                $competenza = new Competenze();
                 $competenza->populateFromArray($row);  // Popola l'oggetto Sede
                 // Aggiungi l'oggetto Sede all'array di sedi
                 array_push($this->competenze, $competenza);
@@ -375,6 +372,11 @@ class Utenti extends DataBaseCore{
         return $result->fetch_assoc();
     }
 
+    public function setPassword($hashedPassword) {
+        $this->password = $hashedPassword;
+        return $this->updateUtente();
+    }
+    
     public function updateUtente() {
 
         if (!$this->isConnectedToDb) {

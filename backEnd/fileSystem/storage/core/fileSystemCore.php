@@ -1,9 +1,9 @@
 <?php
 
-
+if (!class_exists('FileSystem')) {
 class FileSystem{
 
-    private $fileSystemUrl = "https://127.0.0.1/bitByte/backEnd/fileSystem/";
+    private $fileSystemUrl = "https://127.0.0.1/backEnd/";
     private $uploadsPath = "files/";
     private $utenteFolderPlaceholder = "u_";
     private $aziendaFolderPlaceholder = "a_";
@@ -57,5 +57,6 @@ class FileSystem{
 
     }
 
+}
 }
 ?>

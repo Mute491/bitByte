@@ -3,7 +3,7 @@
 // Includi la classe base per la connessione al database
 require_once(__DIR__ . "/core/dbCore.php");
 
-class CompetenzeUtente extends DataBaseCore {
+class Competenze extends DataBaseCore {
     private $candidatura_id;
     private $offerta_id;
     private $utente_id;

@@ -9,7 +9,10 @@ class StorageUtenti extends FileSystem{
 
         $userFolder = $uploadsPath.$utenteFolderPlaceholder.$idUtente;
 
-        mkdir($userFolder, 0755, true);
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        
 
     }
 
@@ -43,6 +46,33 @@ class StorageUtenti extends FileSystem{
         }
     }
 
+    function saveUser($idUtente){
+        $this->createUtenteFolder($idUtente);
+    }
+
+    public function saveUtente($utente, $id) {
+        $path = __DIR__ . "/../../../uploads/utenti/" . $id;
+    
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+    
+        $filePath = $path . "/profilo.json";
+        $datiUtente = [
+            "utente_id" => $utente->getUtenteId(),
+            "nome" => $utente->getNome(),
+            "cognome" => $utente->getCognome(),
+            "email" => $utente->getEmail(),
+            "username" => $utente->getUsername(),
+            "descrizione" => $utente->getDescrizione(),
+            "telefono_contatto" => $utente->getTelefonoContatto(),
+            "data_registrazione" => $utente->getDataRegistrazione(),
+            "immagine_profilo" => $utente->getImmagineProfilo()
+        ];
+    
+        file_put_contents($filePath, json_encode($datiUtente, JSON_PRETTY_PRINT));
+    }
+    
 
 
 }

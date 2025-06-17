@@ -1,9 +1,10 @@
 <?php
 
-require("../db/core/dbCore.php");
-require("sediAziende.php");
-require("offerte.php");
-require("documentiAzienda.php");
+require_once(__DIR__ . "/core/dbCore.php");
+require_once("sediAziende.php");
+require_once("offerte.php");
+require_once("documentiAzienda.php");
+
 
 
 class Aziende extends DataBaseCore{
@@ -24,6 +25,12 @@ class Aziende extends DataBaseCore{
     private $offerte;
     private $documenti;
 
+
+    public function __construct() {
+        $this->connectToDatabase();
+    }
+
+    
     // Getter per aziendaId
     public function getAziendaId() {
         return $this->aziendaId;
@@ -74,11 +81,6 @@ class Aziende extends DataBaseCore{
         return $this->password;
     }
 
-    // Setter per password
-    public function setPassword($passwd) {
-        $this->password = password_hash($passwd, PASSWORD_DEFAULT);;
-    }
-
     // Getter per email
     public function getEmail() {
         return $this->email;
@@ -90,7 +92,7 @@ class Aziende extends DataBaseCore{
 
     // Getter per documenti
     public function getDocumenti() {
-        return $this->nome;
+        return $this->documenti;
     }
     // Getter per offerte
     public function getOfferte() {
@@ -149,23 +151,38 @@ class Aziende extends DataBaseCore{
 
     function addAzienda($nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $email, $password) {
         global $conn, $isConnectedToDb;
-
+    
         if (!$isConnectedToDb) {
-            return 2;
+            return 2; // Errore di connessione
         }
-
+    
+        // Verifica se l'email è già presente
+        $checkStmt = $conn->prepare("SELECT azienda_id FROM aziende WHERE email = ?");
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $checkStmt->store_result();
+    
+        if ($checkStmt->num_rows > 0) {
+            return 3; // Email già registrata
+        }
+    
+        $checkStmt->close();
+    
+        // Procedi con l'inserimento
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-        $stmt = $conn->prepare("INSERT INTO utenti (nome, descrizione, sito_web, email_contatto, telefono_contatto, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss",$nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $email, $passwordHash);
-
+    
+        $stmt = $conn->prepare("INSERT INTO aziende (nome, descrizione, sito_web, email_contatto, telefono_contatto, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssss", $nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $email, $passwordHash);
     
         if ($stmt->execute()) {
-            return 0;
+            return 0; // Successo
         } else {
-            return 1;
+            error_log("Errore durante addAzienda: " . $stmt->error);
+            return 1; // Errore SQL
         }
     }
+    
+    
 
     function setAziendaLogo($fileName){
         global $conn, $isConnectedToDb;
@@ -186,28 +203,23 @@ class Aziende extends DataBaseCore{
     }
 
 
-    function getAziendaByEmail($email) {
-        global $conn, $isConnectedToDb;
-
-        if (!$isConnectedToDb) {
-            return 2;
-        }
-
-        $query = "select * from aziende where email = '".$email."'";
-
-        $result = $conn->query($query);
-
-        if (!$result) {
-            return 1; // oppure puoi restituire $conn->error per debugging
-        }
-
-        $result = $result->fetch_assoc();
-
-        populateFromArray($result);
-
+    public function getAziendaByEmail($email) {
+        if (!$this->isConnectedToDb) return 2;
+    
+        $query = "SELECT * FROM aziende WHERE email = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if (!$result || $result->num_rows === 0) return 1;
+    
+        $row = $result->fetch_assoc();
+        $this->populateFromArray($row);  
+        
         return 0;
-
     }
+    
 
     function getAziendaById($id) {
         global $conn, $isConnectedToDb;
@@ -226,7 +238,8 @@ class Aziende extends DataBaseCore{
 
         $result = $result->fetch_assoc();
 
-        populateFromArray($result);
+        $this->populateFromArray($result);
+
 
         return 0;
 
@@ -358,6 +371,12 @@ class Aziende extends DataBaseCore{
         }
 
     }
+
+    public function setPassword($hashedPassword) {
+        $this->password = $hashedPassword;
+        return $this->updateAzienda();
+    }
+    
 
     public function updateAzienda() {
         global $conn, $isConnectedToDb;

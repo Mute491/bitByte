@@ -1,47 +1,42 @@
 <?php
 
 require_once("../../db/models/offerte.php");
+session_start();
 
-function getOfferta(){
+// Verifica autenticazione
+if (!isset($_SESSION['utente_id'])) {
+    echo("non autenticato");
+    http_response_code(500);
+    exit;
+}
 
-    session_start();
+// Verifica che sia stato passato l'ID dell'offerta
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    echo("parametri mancanti o non validi");
+    http_response_code(400);
+    exit;
+}
 
-    // Verifica autenticazione
-    if (!isset($_SESSION['utente_id'])) {
-        echo("non autenticato");
-        http_response_code(500);
-        exit;
-    }
+$offertaId = intval($_GET['id']);
 
-    // Verifica che sia stato passato l'ID dell'offerta
-    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-        echo("parametri mancanti o non validi");
-        http_response_code(400);
-        exit;
-    }
+$offerte = new Offerte();
 
-    $offertaId = intval($_GET['id']);
+if ($offerte->connectToDatabase() != 0) {
+    echo("connessione al database fallita");
+    http_response_code(500);
+    exit;
+}
 
-    $offerte = new Offerte();
+$datiOfferta = $offerte->getOffertaConRequisitiById($offertaId);
 
-    if ($offerte->connectToDatabase() != 0) {
-        echo("connessione al database fallita");
-        http_response_code(500);
-        exit;
-    }
-
-    $datiOfferta = $offerte->getOffertaConRequisitiById($offertaId);
-
-    if (is_array($datiOfferta)) {
-        echo("offerta non trovata");
-        http_response_code(404);
-        exit;
-    } else {
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode($datiOfferta);
-    }
-
+if (is_array($datiOfferta)) {
+    echo("offerta non trovata");
+    http_response_code(404);
+    exit;
+} else {
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($datiOfferta);
 }
 
 ?>
