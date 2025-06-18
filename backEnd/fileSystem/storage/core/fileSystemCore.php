@@ -1,14 +1,14 @@
 <?php
 
-if (!class_exists('FileSystem')) {
+
 class FileSystem{
 
-    private $fileSystemUrl = "https://127.0.0.1/backEnd/";
-    private $uploadsPath = "files/";
-    private $utenteFolderPlaceholder = "u_";
-    private $aziendaFolderPlaceholder = "a_";
-    private $validFileExtensions = ['jpg', 'png', 'jpeg', 'pdf'];
-    private $validImageExtensions = ['jpg', 'png', 'jpeg'];
+    protected $fileSystemUrl = "/xampp/htdocs/bitByte/backEnd/fileSystem/";
+    protected $uploadsPath = "files/";
+    protected $utenteFolderPlaceholder = "u_";
+    protected $aziendaFolderPlaceholder = "a_";
+    protected $validFileExtensions = ['jpg', 'png', 'jpeg', 'pdf'];
+    protected $validImageExtensions = ['jpg', 'png', 'jpeg'];
 
 
     function getFileSystemUrl(){
@@ -57,6 +57,5 @@ class FileSystem{
 
     }
 
-}
 }
 ?>

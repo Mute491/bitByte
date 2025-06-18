@@ -1,5 +1,8 @@
 <?php
 
+
+
+//correzioni su costruttore e connessione al db
 require_once(__DIR__ . "/core/dbCore.php");
 require_once("sediAziende.php");
 require_once("offerte.php");
@@ -24,11 +27,6 @@ class Aziende extends DataBaseCore{
     private $sediAzienda;
     private $offerte;
     private $documenti;
-
-
-    public function __construct() {
-        $this->connectToDatabase();
-    }
 
     
     // Getter per aziendaId

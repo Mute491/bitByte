@@ -1,8 +1,10 @@
 <?php
 
+
+//correzioni su classe competenze, costruttore e connessione al db
 require_once("core/dbCore.php");
 require_once("candidature.php");
-require_once("competenze.php");
+require_once("competenzeUtente.php");
 require_once("documentiUtente.php");
 
 class Utenti extends DataBaseCore{
@@ -21,11 +23,6 @@ class Utenti extends DataBaseCore{
     private $candidature;
     private $competenze;
     private $documenti;
-
-
-    public function __construct() {
-        $this->connectToDatabase();
-    }
     
     // Getter per utenteId
     public function getUtenteId() {
@@ -157,7 +154,7 @@ class Utenti extends DataBaseCore{
             return 2;
         }
 
-            $stmt = $this->conn->prepare("UPDATE utenti SET immagine_profilo = ? WHERE id = ?");
+            $stmt = $this->conn->prepare("UPDATE utenti SET immagine_profilo = ? WHERE utente_id = ?");
         $stmt->bind_param("si", $fileName, $this->utenteId);
 
         if ($stmt->execute()) {
