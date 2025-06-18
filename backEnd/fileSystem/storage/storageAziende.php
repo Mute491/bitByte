@@ -9,7 +9,7 @@ class StorageAziende extends FileSystem{
 
         $userFolder = $this->fileSystemUrl.$this->uploadsPath.$this->aziendaFolderPlaceholder.$idAzienda;
 
-        mkdir($userFolder, 0755, true);
+        mkdir($userFolder, 0777, true);
 
     }
 

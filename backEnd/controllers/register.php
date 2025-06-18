@@ -109,7 +109,6 @@ function register(){
         }
         else{
 
-            $utente -> closeConnectionToDatabase();
             echo("bad request");
             http_response_code(400);
 
@@ -120,9 +119,12 @@ function register(){
     
 
         if((isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["email_contatto"]) && isset($_POST["nome"]) && 
-            isset($_POST["sito_web"]) && isset($_POST["descrizione"]) && isset($_POST["telefono_contatto"])) &&
-            ($_POST["email"] != "" && $_POST["password"] != "" && $_POST["email_contatto"]!= "" && $_POST["nome"] != "" && 
-            $_POST["cognome"] != "" && $_POST["telefono_contatto"]!= "")
+            isset($_POST["sito_web"]) && isset($_POST["descrizione"]) && isset($_POST["telefono_contatto"])
+            && isset($_POST["ragione_sociale"]) && isset($_POST["partita_iva"]) && isset($_POST["paese_sede"])
+            && isset($_POST["regione_sede"]) && isset($_POST["citta_sede"]) && isset($_POST["indirizzo_sede"])) &&
+            ($_POST["email"] != "" && $_POST["password"] != "" && $_POST["email_contatto"]!= "" && $_POST["nome"] != ""
+            && $_POST["telefono_contatto"]!= "" && $_POST["partita_iva"] != "" && $_POST["ragione_sociale"] != ""
+            && $_POST["paese_sede"] != "" && $_POST["regione_sede"]!= "" && $_POST["citta_sede"] != "" && $_POST["indirizzo_sede"] != "")
         ){
 
             $azienda = new Aziende();
@@ -146,7 +148,7 @@ function register(){
 
             }
 
-            $result = $azienda -> addAzienda($_POST["nome"], $descrizione, $_POST["sito_web"], $_POST["email_contatto"], $_POST["telefono_contatto"], $_POST["email"], $_POST["password"]);
+            $result = $azienda -> addAzienda($_POST["nome"], $descrizione, $_POST["sito_web"], $_POST["email_contatto"], $_POST["telefono_contatto"], $_POST["ragione_sociale"], $_POST["partita_iva"], $_POST["email"], $_POST["password"]);
 
             if($result != 0){
 
@@ -157,7 +159,7 @@ function register(){
             }
 
             // Recupera l'azienda tramite email
-            $result = $azienda->getAziendaByEmail($email);
+            $result = $azienda->getAziendaByEmail($_POST["email"]);
 
             // Controllo esistenza azienda
             if ($result != 0) {
@@ -165,6 +167,17 @@ function register(){
                 http_response_code(404);
                 exit;
             }
+
+            $result = $azienda -> addSedeAzienda($_POST["paese_sede"], $_POST["regione_sede"], $_POST["citta_sede"], $_POST["indirizzo_sede"]);
+
+            if($result != 0){
+
+                $azienda ->  closeConnectionToDatabase();
+                echo("errore durante la registrazione della sede aziendale");
+                http_response_code(500);
+
+            }
+
                 
             $fs -> createAziendaFolder($azienda->getAziendaId());
 
@@ -181,7 +194,7 @@ function register(){
                 }
 
 
-                $result = $azienda -> setAziendaLogo($aziendaData["azienda_id"], $_FILES["logo"]["name"]);
+                $result = $azienda -> setAziendaLogo($_FILES["logo"]["name"]);
 
                 if($result != 0){
                             
@@ -197,13 +210,12 @@ function register(){
             $azienda -> closeConnectionToDatabase();
             echo("registrazione eseguita con successo");
             http_response_code(200);
-            header('Location: ../../../frontEnd/azienda/login.php');
+            header('Location: ../../frontEnd/azienda/login.html');
             
 
         }
         else{
 
-            $azienda -> closeConnectionToDatabase();
             echo("bad request");
             http_response_code(400);
 

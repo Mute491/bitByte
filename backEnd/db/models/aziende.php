@@ -6,7 +6,6 @@
 require_once(__DIR__ . "/core/dbCore.php");
 require_once("sediAziende.php");
 require_once("offerte.php");
-require_once("documentiAzienda.php");
 
 
 
@@ -26,7 +25,6 @@ class Aziende extends DataBaseCore{
 
     private $sediAzienda;
     private $offerte;
-    private $documenti;
 
     
     // Getter per aziendaId
@@ -88,10 +86,6 @@ class Aziende extends DataBaseCore{
         return $this->sediAzienda;
     }
 
-    // Getter per documenti
-    public function getDocumenti() {
-        return $this->documenti;
-    }
     // Getter per offerte
     public function getOfferte() {
         return $this->offerte;
@@ -131,12 +125,12 @@ class Aziende extends DataBaseCore{
     function addSedeAzienda($paese, $regione, $citta, $indirizzo) {
         global $conn, $isConnectedToDb;
 
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2;
         }
 
         // Prepara la query SQL
-        $stmt = $conn->prepare("INSERT INTO sediAziende (azienda_id, paese, regione, citta, indirizzo) VALUES (?, ?, ?, ?, ?)");
+        $stmt =  $this -> conn ->prepare("INSERT INTO sediAziende (azienda_id, paese, regione, citta, indirizzo) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $this->aziendaId, $paese, $regione, $citta, $indirizzo);
 
         // Esegui e controlla il risultato
@@ -147,15 +141,14 @@ class Aziende extends DataBaseCore{
         }
     }
 
-    function addAzienda($nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $email, $password) {
-        global $conn, $isConnectedToDb;
+    function addAzienda($nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $ragioneSociale, $partitaIva, $email, $password) {
     
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2; // Errore di connessione
         }
     
         // Verifica se l'email è già presente
-        $checkStmt = $conn->prepare("SELECT azienda_id FROM aziende WHERE email = ?");
+        $checkStmt = $this -> conn ->prepare("SELECT azienda_id FROM aziende WHERE email = ?");
         $checkStmt->bind_param("s", $email);
         $checkStmt->execute();
         $checkStmt->store_result();
@@ -169,8 +162,8 @@ class Aziende extends DataBaseCore{
         // Procedi con l'inserimento
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     
-        $stmt = $conn->prepare("INSERT INTO aziende (nome, descrizione, sito_web, email_contatto, telefono_contatto, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $email, $passwordHash);
+        $stmt =  $this -> conn ->prepare("INSERT INTO aziende (nome, descrizione, sito_web, email_contatto, telefono_contatto, ragione_sociale, partita_iva, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $nome, $descrizione, $sitoWeb, $emailContatto, $telefonoContatto, $ragioneSociale, $partitaIva, $email, $passwordHash);
     
         if ($stmt->execute()) {
             return 0; // Successo
@@ -183,13 +176,12 @@ class Aziende extends DataBaseCore{
     
 
     function setAziendaLogo($fileName){
-        global $conn, $isConnectedToDb;
 
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2;
         }
 
-        $stmt = $conn->prepare("UPDATE aziende SET logo = ? WHERE id = ?");
+        $stmt = $this ->conn->prepare("UPDATE aziende SET logo = ? WHERE azienda_id = ?");
         $stmt->bind_param("si", $fileName, $this->aziendaId);
 
         if ($stmt->execute()) {
@@ -220,15 +212,14 @@ class Aziende extends DataBaseCore{
     
 
     function getAziendaById($id) {
-        global $conn, $isConnectedToDb;
 
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2;
         }
 
         $query = "select * from aziende where azienda_id = ".$id;
 
-        $result = $conn->query($query);
+        $result = $this -> conn->query($query);
 
         if (!$result) {
             return 1; // oppure puoi restituire $conn->error per debugging
@@ -244,37 +235,15 @@ class Aziende extends DataBaseCore{
     }
 
 
-    function addDocumento($fileName){
-
-        $documenti = new DocumentiAzienda();
-
-        $result = $documenti->addDocumento($this->aziendaId, $fileName);
-
-        return $result;
-
-    }
-
-    function deleteDocumento($id){
-
-        $documenti = new DocumentiAzienda();
-
-        $result = $documenti->deleteDocumento($id);
-
-        return $result;
-
-    }
-
     public function fetchSediAzienda(){
 
-        global $conn, $isConnectedToDb;
-
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2;
         }
 
         $query = "select * from sediAziende where azienda_id = ".$this->aziendaId;
 
-        $result = $conn->query($query);
+        $result = $this -> conn->query($query);
 
         if (!$result) {
             return 1; // oppure puoi restituire $conn->error per debugging
@@ -302,15 +271,13 @@ class Aziende extends DataBaseCore{
 
     public function fetchOfferteAzienda(){
 
-        global $conn, $isConnectedToDb;
-
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2;
         }
 
         $query = "select * from offerte where azienda_id = ".$this->aziendaId;
 
-        $result = $conn->query($query);
+        $result = $this -> conn->query($query);
 
         if (!$result) {
             return 1; // oppure puoi restituire $conn->error per debugging
@@ -377,9 +344,8 @@ class Aziende extends DataBaseCore{
     
 
     public function updateAzienda() {
-        global $conn, $isConnectedToDb;
     
-        if (!$isConnectedToDb) {
+        if (!$this -> isConnectedToDb) {
             return 2; // Connessione non attiva
         }
     
@@ -443,7 +409,7 @@ class Aziende extends DataBaseCore{
         }
     
         $query = "UPDATE aziende SET " . implode(", ", $fields) . " WHERE azienda_id = ?";
-        $stmt = $conn->prepare($query);
+        $stmt = $this -> conn->prepare($query);
     
         if (!$stmt) {
             return 4; // Errore nella preparazione

@@ -23,7 +23,7 @@ function getInfoUtente(){
             if ($utenti->connectToDatabase() != 0) {
                 echo "Connessione al database fallita";
                 http_response_code(500);
-                exit;
+                return NULL;
             }
             
             $result = $utenti -> getUtenteById($userId);
