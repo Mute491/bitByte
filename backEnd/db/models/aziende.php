@@ -104,6 +104,7 @@ class Aziende extends DataBaseCore{
         $this->logo = isset($data['logo']) ? $data['logo'] : $this->logo;
         $this->password = isset($data['password']) ? $data['password'] : $this->password;
         $this->email = isset($data['email']) ? $data['email'] : $this->email;
+        
     }
 
     public function toArray() {
@@ -118,7 +119,9 @@ class Aziende extends DataBaseCore{
             'ragione_sociale' => $this->ragioneSociale,
             'logo' => $this->logo,
             'password' => $this->password,
-            'email' => $this->email
+            'email' => $this->email,
+            'offerte' => $this->offerte,
+            'sediAzienda' => $this->sediAzienda
         ];
     }
 
@@ -303,39 +306,6 @@ class Aziende extends DataBaseCore{
 
     }
 
-    public function fetchDocumentiAzienda(){
-
-        if (!$this->isConnectedToDb) {
-            return 2;
-        }
-
-        $query = "select * from documentiAzienda where utente_id = ".$this->aziendaId;
-
-        $result = $this->conn->query($query);
-
-        if (!$result) {
-            return 1; // oppure puoi restituire $conn->error per debugging
-        }
-
-        if ($result->num_rows > 0) {
-            // Elenco delle sedi da restituire
-            $this->documenti = [];
-    
-            // Itera su tutte le righe del risultato
-            while ($row = $result->fetch_assoc()) {
-                // Crea un oggetto SediAziende e popola con i dati
-                $documento = new DocumentiAzienda();
-                $documento->populateFromArray($row);  // Popola l'oggetto Sede
-                // Aggiungi l'oggetto Sede all'array di sedi
-                array_push($this->documenti, $documento);
-            }
-    
-            return 0; // Successo
-        } else {
-            return 3; // Nessuna sede trovata
-        }
-
-    }
 
     public function setPassword($hashedPassword) {
         $this->password = $hashedPassword;

@@ -13,12 +13,15 @@ function register(){
 
     if ($tipo === "utente") {
         require("../db/models/utenti.php");
+        require("../db/models/competenzeUtente.php");
         require("../fileSystem/storage/storageUtenti.php");
 
         if((isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["username"]) && isset($_POST["nome"]) && 
-            isset($_POST["cognome"]) && isset($_POST["descrizione"]) && isset($_POST["nTelefono"])) &&
+            isset($_POST["cognome"]) && isset($_POST["descrizione"]) && isset($_POST["nTelefono"]) &&
+            isset($_POST["competenze1"]) && isset($_POST["competenze2"]) && isset($_POST["competenze3"])) &&
             ($_POST["email"] != "" && $_POST["password"] != "" && $_POST["username"]!= "" && $_POST["nome"] != "" && 
-            $_POST["cognome"] != "" && $_POST["nTelefono"]!= "")
+            $_POST["cognome"] != "" && $_POST["nTelefono"]!= "" && $_POST["competenze1"]!= "" && $_POST["competenze2"]!= "" 
+            && $_POST["competenze3"]!= "")
         ){
 
             $utente = new Utenti();
@@ -75,6 +78,36 @@ function register(){
 
                     $utente -> closeConnectionToDatabase();
                     echo("errore durante l'upload del file");
+                    http_response_code(500);
+
+                }
+
+                $result = $utente -> addCompetenzaUtente($_POST["competenze1"]);
+
+                if($result != 0){
+
+                    $utente -> closeConnectionToDatabase();
+                    echo("errore durante l'aggiunta della competenza 1");
+                    http_response_code(500);
+
+                }
+
+                $result = $utente -> addCompetenzaUtente($_POST["competenze2"]);
+
+                if($result != 0){
+
+                    $utente -> closeConnectionToDatabase();
+                    echo("errore durante l'aggiunta della competenza 2");
+                    http_response_code(500);
+
+                }
+
+                $result = $utente -> addCompetenzaUtente($_POST["competenze3"]);
+
+                if($result != 0){
+
+                    $utente -> closeConnectionToDatabase();
+                    echo("errore durante l'aggiunta della competenza 3");
                     http_response_code(500);
 
                 }

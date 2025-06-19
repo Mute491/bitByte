@@ -22,12 +22,12 @@
         <nav>
             <div class="nav-wrapper light-blue darken-1">
                 <a href="#" class="brand-logo center">Logo</a>
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
                 <?php 
                 
                     if(isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] == $_GET["id"]){
-                        echo(' <ul id="nav-mobile" class="left hide-on-med-and-down">
+                        echo('<a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                    <ul id="nav-mobile" class="left hide-on-med-and-down">
                     <li><a href="candidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
                     <li><a href="offerteLavoro.php"><i class="material-icons left">business_center</i>offerte</a></li>
                 </ul>
@@ -96,17 +96,21 @@
                             </p>
                             <?php
 
-                                echo("<p>
+                                if(isset($userData["competenze"])){
+
+                                    echo("<p>
                                     Competenze
                                     <br>");
 
-                                foreach($userData["competenze"] as $competenza){
+                                    foreach($userData["competenze"] as $competenza){
 
-                                    echo($competenza -> getCompetenza() . "<br>");
+                                        echo($competenza -> getCompetenza() . "<br>");
+
+                                    }
+                            
+                                    echo("</p>");
 
                                 }
-                            
-                                echo("</p>");
 
                             ?>
                         </div>
@@ -120,17 +124,20 @@
                         <div class="col s12">
                             <?php
 
-                                echo("<p>
+                                if(isset($userData["documenti"])){
+
+                                    echo("<p>
                                     Documenti
                                     <br>");
 
-                                foreach($userData["documenti"] as $documento){
+                                    foreach($userData["documenti"] as $documento){
 
-                                    echo("<a href='>".$documento["path"]."'>".$documento["nome"]."</a><br>");
+                                        echo("<a href='>".$documento["path"]."'>".$documento["nome"]."</a><br>");
 
-                                }
+                                    }
                             
-                                echo("</p>");
+                                    echo("</p>");
+                                }
 
                             ?>
                         </div>

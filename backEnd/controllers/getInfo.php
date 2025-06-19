@@ -1,13 +1,10 @@
 <?php
-session_start();
-
-require(__DIR__."/../db/models/utenti.php");
-require(__DIR__."/../fileSystem/storage/storageUtenti.php");
-require(__DIR__."/../db/models/aziende.php");
-require(__DIR__."/../fileSystem/storage/storageAziende.php");
 
 
 function getInfoUtente(){
+
+    require_once(__DIR__."/../db/models/utenti.php");
+    require_once(__DIR__."/../fileSystem/storage/storageUtenti.php");
 
     if(isset($_GET["id"]) && $_GET["id"]!=""){
 
@@ -40,9 +37,7 @@ function getInfoUtente(){
 
             if($result != 0){
 
-                echo("errore durante il fetching delle competenze");
-                http_response_code(500);
-                return NULL;
+                //echo("errore durante il fetching delle competenze");
 
             }
 
@@ -50,9 +45,9 @@ function getInfoUtente(){
 
             if($result != 0){
 
-                echo("errore durante il fetching delle competenze");
-                http_response_code(500);
-                return NULL;
+                // echo("errore durante il fetching dei documenti");
+                // http_response_code(500);
+                // return NULL;
 
             }
 
@@ -62,24 +57,27 @@ function getInfoUtente(){
             unset($userData["password"]);
             unset($userData["data_registrazione"]);
 
-            $path = $storageUtenti -> getFileSystemUrl();
+            $path = "../../backEnd/fileSystem/";
             $path .= $storageUtenti -> getUploadsPath();
             $path .= $storageUtenti -> getUtenteFolderPlaceholder();
             $path .= $userId."/";
 
-            foreach($userData["documenti"] as &$documento){
+            if(isset($userData["documenti"])){
 
-                $nomeFile = $documento->getDocumento();
-                $documentoId = $documento->getDocumentoId();
+                foreach($userData["documenti"] as &$documento){
 
-                $documento = [
-                    "path" => $path . $nomeFile,
-                    "nome" => $nomeFile,
-                    "id" => $documentoId
-                ];
+                    $nomeFile = $documento->getDocumento();
+                    $documentoId = $documento->getDocumentoId();
+    
+                    $documento = [
+                        "path" => $path . $nomeFile,
+                        "nome" => $nomeFile,
+                        "id" => $documentoId
+                    ];
+    
+                }
 
             }
-
 
             if($userData["immagine_profilo"] != NULL){
 
@@ -117,8 +115,91 @@ function getInfoUtente(){
 
 function getInfoAzienda(){
 
+    require_once(__DIR__."/../db/models/aziende.php");
+    require_once(__DIR__."/../fileSystem/storage/storageAziende.php");
 
+    if(isset($_GET["id"]) && $_GET["id"]!=""){
+
+        if(isset($_SESSION["azienda_id"])){
+
+            $aziende = new Aziende();
+            $storageAziende = new StorageAziende();
+
+            $aziendaId = $_GET["id"];
+
+            if ($aziende->connectToDatabase() != 0) {
+                echo "Connessione al database fallita";
+                http_response_code(500);
+                return NULL;
+            }
+            
+            $result = $aziende -> getAziendaById($aziendaId);
+
+            if($result != 0){
+
+                echo("errore durante il fetching dell'azienda");
+                http_response_code(500);
+                return NULL;
+
+            }
+
+            $result = $aziende -> fetchOfferteAzienda();
+
+            if($result != 0){
+
+                //echo("errore durante il fetching delle offerte");
+
+            }
+
+            $result = $aziende -> fetchSediAzienda();
+
+            if($result != 0){
+
+                echo("errore durante il fetching delle sedi");
+                http_response_code(500);
+                return NULL;
+
+            }
+
+            $aziendaData = $aziende -> toArray();
+
+            $path = "../../backEnd/fileSystem/";
+            $path .= $storageAziende -> getUploadsPath();
+            $path .= $storageAziende -> getAziendaFolderPlaceholder();
+            $path .= $aziendaId."/";
+
+            if($aziendaData["logo"] != NULL){
+
+                $aziendaData["logo"] = $path . $aziendaData["logo"];
+
+            }
+            else{
+
+                unset($aziendaData["logo"]);
+
+            }
+
+            return $aziendaData;
+
+        }
+        else{
+
+            echo("non autenticato");
+            http_response_code(403);
+            header('Location: ../../frontEnd/utente/login.html');
+            return NULL;
+        }
+    }
+    else{
+
+        echo("campi obbligatori mancanti");
+        http_response_code(403);
+        header('Location: ../../frontEnd/utente/login.html');
+        return NULL;
+
+    }
 
 }
+
 
 ?>

@@ -148,6 +148,24 @@ class Utenti extends DataBaseCore{
 
     }
 
+    public function addCompetenzaUtente($competenzaId) {
+        if (!$this->isConnectedToDb) {
+            return 2; // Connessione non attiva
+        }
+
+        // Inserisce la relazione nella tabella competenzaUtente
+        $stmt = $this->conn->prepare("INSERT INTO competenzaUtente (utente_id, competenza_id) VALUES (?, ?)");
+        if (!$stmt) return 1; // Errore nella preparazione
+
+        $stmt->bind_param("ii", $this -> utenteId, $competenzaId);
+
+        if ($stmt->execute()) {
+            return 0; // Inserimento riuscito
+        } else {
+            return 5; // Errore in esecuzione
+        }
+    }
+
     public function setUtenteProfileImage($fileName){
 
         if (!$this->isConnectedToDb) {
@@ -249,7 +267,11 @@ class Utenti extends DataBaseCore{
             return 2;
         }
 
-        $query = "select * from competenzaUtente where utente_id = ".$this->utenteId;
+        $query = "SELECT u.utente_id as utente_id, c.competenza as competenza
+                    FROM utenti u
+                    JOIN competenzaUtente cu ON u.utente_id = cu.utente_id
+                    JOIN competenze c ON cu.competenza_id = c.competenza_id
+                    WHERE u.utente_id = ".$this->utenteId;
 
         $result = $this->conn->query($query);
 
