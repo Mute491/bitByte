@@ -140,11 +140,22 @@ class Utenti extends DataBaseCore{
 
     function addDocumento($fileName){
 
-        $documenti = new DocumentiUtente();
+        if (!$this->isConnectedToDb) {
+            return 2;
+        }
 
-        $result = $documenti->addDocumento($this->utenteId, $fileName);
+        $sql = "INSERT INTO documentiUtente (utente_id, documento) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
 
-        return $result;
+        // Associa i parametri
+        $stmt->bind_param('is', $this -> utenteId, $fileName);
+
+        // Esegui l'inserimento
+        if ($stmt->execute()) {
+            return 0;
+        } else {
+            return 1; // inserimento fallito
+        }
 
     }
 
@@ -333,7 +344,7 @@ class Utenti extends DataBaseCore{
 
     }
 
-    public function getCandidatureWithInfoByUtenteId($utenteId) {
+    public function getCandidatureWithInfo() {
         if (!$this->isConnectedToDb) {
             return 3;
         }
@@ -348,7 +359,7 @@ class Utenti extends DataBaseCore{
             return 2;
         }
 
-        $stmt->bind_param("i", $utenteId);
+        $stmt->bind_param("i", $this -> utenteId);
         $stmt->execute();
 
         $result = $stmt->get_result();

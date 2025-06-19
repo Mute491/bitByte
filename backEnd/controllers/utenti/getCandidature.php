@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__."/../../db/models/candidature.php");
+require_once(__DIR__."/../../db/models/utenti.php");
 
 function getCandidature(){
 
@@ -13,9 +13,9 @@ function getCandidature(){
         return NULL;
     }
     
-    $candidatureObj = new Candidature();
+    $utente = new Utenti();
     
-    if (!$candidatureObj->connectToDatabase()) {
+    if ($utente->connectToDatabase() != 0) {
         echo "connessione al database fallita";
         http_response_code(500);
         return NULL;
@@ -23,7 +23,15 @@ function getCandidature(){
     
     $utenteId = $_SESSION['utente_id'];
     
-    $risultato = $candidatureObj->getCandidatureByUtenteId($utenteId);
+    if($utente -> getUtenteById($utenteId) != 0){
+
+        echo "impossibile trovare l'utente";
+        http_response_code(500);
+        return NULL;
+
+    } 
+
+    $risultato = $utente->getCandidatureWithInfo();
     
     if (!is_array($risultato)) {
         

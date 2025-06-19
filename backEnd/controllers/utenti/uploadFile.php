@@ -1,72 +1,69 @@
 <?php
 
-    require("../../db/models/utenti.php");
-    require("../../fileSystem/storage/storageUtenti.php");
-
 function uploadFile(){
 
-    session_Start();
+    session_start();
 
-    if(isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] != ""){
+    // Verifica sessione
+    $isAuth = isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] != "";
 
-        if(isset($_FILE["file"])){
-
-            $storageUtenti = new StorageUtenti();
-            $utente = new Utenti();
-
-            $utente -> connectToDatabase();
-
-            $result = $utente -> getUtenteById($_SESSION["utente_id"]);
-
-            if($result > 0){
-
-                echo("impossibile connettersi al database");
-                http_response_code(500);
-
-            }
-
-
-            $result = $storageUtenti -> uploadUtenteFile($_SESSION["id"], $_FILE["file"]);
-
-            if($result > 0){
-
-                $utente -> closeConnectionToDatabase();
-                echo("impossibile caricare il file");
-                http_response_code(500);
-
-            }
-
-            $result = $utente -> addDocumento($_FILE["file"]["name"]);
-
-            if($result > 0){
-
-                $utente -> closeConnectionToDatabase();
-                echo("impossibile caricare il file");
-                http_response_code(500);
-
-            }
-
-            $utente -> closeConnectionToDatabase();
-            echo("successo");
-            http_response_code(200);
-
-        }
-        else {
-
-            $utente -> closeConnectionToDatabase();
-            echo("file mancante");
-            http_response_code(403);
-
-        }
-
+    if (!$isAuth) {
+        echo "Non autenticato";
+        http_response_code(401);
+        header('Location: ../../../frontEnd/utente/login.html');
+        exit;
     }
-    else{
 
-        $utente -> closeConnectionToDatabase();
-        echo("non autenticato");
-        http_response_code(403);
+    if (!isset($_FILES["file"])) {
+        echo "Nessun file ricevuto";
+        http_response_code(400);
+        header('Location: ../../../frontEnd/utente/paginaProfilo.php?id='.$_SESSION["utente_id"]);
+        exit;
+    }  
 
+    $file = $_FILES["file"];
+
+    if ($isAuth) {
+        require_once(__DIR__."/../../db/models/utenti.php");
+        require_once(__DIR__."/../../fileSystem/storage/storageUtenti.php");
+        $utente = new Utenti();
+
+        if ($utente->connectToDatabase() != 0) {
+            echo "Connessione al database fallita";
+            http_response_code(500);
+            exit;
+        }
+
+        if ($utente->getUtenteById($_SESSION["utente_id"]) > 0) {
+            echo "Impossibile connettersi al database";
+            http_response_code(500);
+            exit;
+        }
+
+        $storage = new StorageUtenti();
+        if ($storage->uploadUtenteFile($_SESSION["utente_id"], $file) != 0) {
+            $utente->closeConnectionToDatabase();
+            echo "Errore nel salvataggio del file";
+            http_response_code(500);
+            exit;
+        }
+
+        if ($utente->addDocumento($file["name"]) != 0) {
+            $utente->closeConnectionToDatabase();
+            echo "Errore nella registrazione del file nel database";
+            http_response_code(500);
+            exit;
+        }
+
+        $utente->closeConnectionToDatabase();
+        echo "File caricato con successo";
+        http_response_code(200);
+
+        header('Location: ../../../frontEnd/utente/paginaProfilo.php?id='.$_SESSION["utente_id"]);
+
+        exit;
     }
 }
 
+uploadFile();
 ?>

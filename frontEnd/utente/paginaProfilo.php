@@ -28,7 +28,7 @@
                     if(isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] == $_GET["id"]){
                         echo('<a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                     <ul id="nav-mobile" class="left hide-on-med-and-down">
-                    <li><a href="candidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
+                    <li><a href="paginaCandidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
                     <li><a href="offerteLavoro.php"><i class="material-icons left">business_center</i>offerte</a></li>
                 </ul>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -45,7 +45,7 @@
                     <li><a href="../../backEnd/controllers/utenti/logout.php"><i class="material-icons left">exit_to_app</i>Logout</a></li>
                 </ul>
                 <ul class="sidenav light-blue darken-1" id="mobile-demo">
-                    <li><a href="candidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
+                    <li><a href="paginaCandidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
                     <li><a class="dropdown-trigger" href="#!" data-target="dropdownmenu_mobile"><i class="material-icons left">person</i>i class="material-icons right">arrow_drop_down</i></a></li>
                 </ul>');
                     }
@@ -132,7 +132,7 @@
 
                                     foreach($userData["documenti"] as $documento){
 
-                                        echo("<a href='>".$documento["path"]."'>".$documento["nome"]."</a><br>");
+                                        echo("<a href='".$documento["path"]."'>".$documento["nome"]."</a><br>");
 
                                     }
                             
@@ -141,6 +141,21 @@
 
                             ?>
                         </div>
+                        <?php
+                        
+                            if(isset($_SESSION["utente_id"]) && $_SESSION["utente_id"] == $_GET["id"]){
+
+                                echo('Carica un documento:
+                                    <form action="../../backEnd/controllers/utenti/uploadFile.php" method="post" enctype="multipart/form-data">
+
+                                        <input type="file" name="file" id="file">
+                                        <input type="submit" value="Carica">
+
+                                    </form>');
+                            }
+
+                        ?>
+
                     </div>
                 </div>
             </div>

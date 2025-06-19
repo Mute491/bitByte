@@ -10,7 +10,7 @@ function getInfoUtente(){
 
         session_start();
 
-        if(isset($_SESSION["utente_id"])){
+        if(isset($_SESSION["utente_id"]) || isset($_SESSION["azienda_id"])){
 
             $utenti = new Utenti();
             $storageUtenti = new StorageUtenti();
@@ -27,6 +27,7 @@ function getInfoUtente(){
 
             if($result != 0){
 
+                $utenti -> closeConnectionToDatabase();
                 echo("errore durante il fetching dell'utente");
                 http_response_code(500);
                 return NULL;
@@ -90,6 +91,7 @@ function getInfoUtente(){
 
             }
 
+            $utenti -> closeConnectionToDatabase();
             return $userData;
 
         }   
@@ -120,7 +122,7 @@ function getInfoAzienda(){
 
     if(isset($_GET["id"]) && $_GET["id"]!=""){
 
-        if(isset($_SESSION["azienda_id"])){
+        if(isset($_SESSION["azienda_id"]) || isset($_SESSION["utente_id"])){
 
             $aziende = new Aziende();
             $storageAziende = new StorageAziende();
@@ -137,6 +139,7 @@ function getInfoAzienda(){
 
             if($result != 0){
 
+                $aziende -> closeConnectionToDatabase();
                 echo("errore durante il fetching dell'azienda");
                 http_response_code(500);
                 return NULL;
@@ -155,6 +158,7 @@ function getInfoAzienda(){
 
             if($result != 0){
 
+                $aziende -> closeConnectionToDatabase();
                 echo("errore durante il fetching delle sedi");
                 http_response_code(500);
                 return NULL;
@@ -178,6 +182,8 @@ function getInfoAzienda(){
                 unset($aziendaData["logo"]);
 
             }
+
+            $aziende -> closeConnectionToDatabase();
 
             return $aziendaData;
 

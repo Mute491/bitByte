@@ -1,10 +1,11 @@
 <?php
+session_start();
 
 require(__DIR__."/../../backEnd/controllers/utenti/getOfferte.php");
 require(__DIR__."/../../backEnd/controllers/getInfo.php");
 
-$datiUtente = getInfoUtente();
 $offerteLavoro = getOfferte();
+$datiUtente = getInfoUtente();
 
 ?>
 

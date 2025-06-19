@@ -1,15 +1,16 @@
 <?php
 
-require_once(__DIR__."/../../db/models/offerte.php");
+require_once("../../db/models/offerte.php");
 
 function getOfferte(){
+
     session_start();
 
     // Verifica che l'utente sia autenticato
-    if (!isset($_SESSION['utente_id'])) {
+    if (!isset($_SESSION['azienda_id'])) {
         echo("non autorizzato");
         http_response_code(401); // Unauthorized
-        header('Location: ../../../frontEnd/utente/login.html');
+        header('Location: ../../../frontEnd/azienda/login.html');
         return NULL;
     }
 

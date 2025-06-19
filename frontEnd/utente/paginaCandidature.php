@@ -51,8 +51,14 @@ $candidatureUtente = getCandidature();
                 <a href="#" class="brand-logo center">Logo</a>
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul id="nav-mobile" class="left hide-on-med-and-down">
-                    <li><a href="index.html"><i class="material-icons left">home</i>Home</a></li>
-                    <li><a href="candidature.html"><i class="material-icons left">business_center</i>Candidature</a></li>
+
+                    <?php
+                    
+                        echo('<li><a href="paginaProfilo.php?id='.$_SESSION["utente_id"].'"><i class="material-icons left">home</i>Visualizza Profilo</a></li>');
+
+                    ?>
+
+                    <li><a href="offerteLavoro.php"><i class="material-icons left">business_center</i>Offerte di lavoro</a></li>
                 </ul>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a class="dropdown-trigger" href="#!" data-target="dropdownmenu"><i class="material-icons left">person</i>Nome Cognome<i class="material-icons right">arrow_drop_down</i></a></li>
@@ -70,7 +76,7 @@ $candidatureUtente = getCandidature();
                     <li><a href="../../backEnd/controllers/utenti/logout.php"><i class="material-icons left">exit_to_app</i>Logout</a></li>
                 </ul>
                 <ul class="sidenav light-blue darken-1" id="mobile-demo">
-                    <li><a href="candidature.php"><i class="material-icons left">business_center</i>Candidature</a></li>
+                    <li><a href="offerteLavoro.php"><i class="material-icons left">business_center</i>Offerte di lavoro</a></li>
                     <li><a class="dropdown-trigger" href="#!" data-target="dropdownmenu_mobile"><i class="material-icons left">person</i><i class="material-icons right">arrow_drop_down</i></a></li>
                 </ul>
             </div>
@@ -96,7 +102,7 @@ $candidatureUtente = getCandidature();
                                                 '.$candidaturaSingola["titolo_offerta"].'
                                             </td>');
 
-                                        if($candidaturaSingola["titolo_offerta"] == "In attesa"){
+                                        if($candidaturaSingola["stato_candidatura"] == "In attesa"){
 
                                             echo('<td class="center">
                                                     <div class="status">
@@ -106,7 +112,7 @@ $candidatureUtente = getCandidature();
                                                 </td>');
 
                                         }
-                                        else if($candidaturaSingola["titolo_offerta"] == "Accettata"){
+                                        else if($candidaturaSingola["stato_candidatura"] == "Accettata"){
 
                                             echo('<td class="center">
                                                     <div class="status center">
@@ -116,7 +122,7 @@ $candidatureUtente = getCandidature();
                                                 </td>');
 
                                         }
-                                        else if($candidaturaSingola["titolo_offerta"] == "Rifuitata"){
+                                        else if($candidaturaSingola["stato_candidatura"] == "Rifuitata"){
 
                                             echo('<td class="center">
                                                     <div class="status">
@@ -146,6 +152,11 @@ $candidatureUtente = getCandidature();
 
                                     echo('</tbody></table>;');
     
+                                }
+                                else{
+
+                                    echo("Non hai ancora inviato delle candidature");
+
                                 }
                                 
                                 
